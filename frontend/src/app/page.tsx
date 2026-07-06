@@ -1,6 +1,15 @@
+"use client";
+import { useEffect } from "react";
 import Link from "next/link";
 
 export default function Home() {
+
+  useEffect(() => {
+    // Silently ping the backend to wake up the Render server
+    fetch("https://ai-interview-platform-vlvl.onrender.com/")
+      .catch((err) => console.log("Silent wake-up ping sent."));
+  }, []);
+  
   return (
     <main className="min-h-screen bg-black text-white">
 

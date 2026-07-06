@@ -9,32 +9,42 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // Added loading state
 
   const handleLogin = async () => {
-    // 1. Send the data to your FastAPI backend
-    const response = await fetch("https://ai-interview-platform-vlvl.onrender.com/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+    setLoading(true); // Start loading animation and change button text
 
-    const data = await response.json();
+    try {
+      // 1. Send the data to your FastAPI backend
+      const response = await fetch("https://ai-interview-platform-vlvl.onrender.com/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-    // 2. If the backend says the password matches...
-    if (response.ok) {
-      // We now capture the JWT token passed back from the FastAPI server
-      localStorage.setItem("token", data.token);
-      
-      alert("Login Successful!");
-      router.push("/dashboard");
-    }else {
-      // If password/email is wrong, show the FastAPI error message
-      alert(data.detail);
+      const data = await response.json();
+
+      // 2. If the backend says the password matches...
+      if (response.ok) {
+        // We now capture the JWT token passed back from the FastAPI server
+        localStorage.setItem("token", data.token);
+        
+        alert("Login Successful!");
+        router.push("/dashboard");
+      } else {
+        // If password/email is wrong, show the FastAPI error message
+        alert(data.detail);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Network error connecting to backend.");
+    } finally {
+      setLoading(false); // Stop loading regardless of success or failure
     }
   };
 
@@ -64,9 +74,10 @@ export default function LoginPage() {
 
         <button
           onClick={handleLogin}
-          className="w-full bg-white text-black p-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+          disabled={loading}
+          className="w-full bg-white text-black p-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Login
+          {loading ? "Waking up secure server (this may take 30s)..." : "Login"}
         </button>
 
       </div>

@@ -10,8 +10,11 @@ export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // Added loading state
 
   const handleSignup = async () => {
+    setLoading(true); // Start loading animation and change button text
+
     try {
       const response = await fetch("https://ai-interview-platform-vlvl.onrender.com/signup", {
         method: "POST",
@@ -37,6 +40,8 @@ export default function SignupPage() {
     } catch (error) {
       console.error(error);
       alert("Network error connecting to backend.");
+    } finally {
+      setLoading(false); // Stop loading regardless of success or failure
     }
   };
 
@@ -74,9 +79,10 @@ export default function SignupPage() {
 
         <button
           onClick={handleSignup}
-          className="w-full bg-white text-black p-3 rounded-lg font-bold hover:bg-gray-200 transition-colors mb-4"
+          disabled={loading}
+          className="w-full bg-white text-black p-3 rounded-lg font-bold hover:bg-gray-200 transition-colors mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Sign Up
+          {loading ? "Waking up secure server (this may take 30s)..." : "Sign Up"}
         </button>
 
         <p className="text-center text-zinc-400 text-sm">
